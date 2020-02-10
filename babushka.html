@@ -10,6 +10,14 @@
 
 
     <style>
+        body {
+            background-color: #d7e8d7;
+            font-family: "Realist thin", thin;
+
+        }
+
+
+
         nav {
             flex-direction: row;
             text-align: center;
@@ -19,10 +27,15 @@
         }
 
         nav .valgt {
-            background-color: #e0d0d0;
+            background-color: #7eb77e;
         }
 
         h1 {
+            font-family: "Realist thin", thin;
+            font-size: 100px;
+            border-bottom: solid;
+            letter-spacing: 0.2rem;
+            color: darkgreen;
             flex-direction: row;
             text-align: center;
             padding: 0.5rem 0.5rem 0.5rem;
@@ -34,6 +47,7 @@
             border: 1px solid black;
             background-color: #ffffff;
             padding: 0.5rem 0.5rem 0.5rem;
+            margin: 0.5rem;
 
         }
 
@@ -57,14 +71,18 @@
 
         button {
             border: 1px solid black;
-            width: 5rem;
-            height: 2rem;
+            width: 7rem;
+            height: 3rem;
+            font-size: 15px;
+            font-weight: 100
         }
     </style>
 </head>
 
 <body>
-    <h1>Alle Kategorier</h1>
+    <h1>Bistro Babushka</h1>
+
+
     <nav class="menu">
         <button class="filter valgt" data-retter="alle">Alle</button>
         <button class="filter" data-retter="forretter">Forretter</button>
@@ -74,6 +92,7 @@
         <button class="filter" data-retter="sideorders">Sideorders</button>
     </nav>
 
+    <h2>Alle Kategorier</h2>
 
     <template>
         <article class="retter">
@@ -148,7 +167,7 @@
         function filtrering() {
             console.log("FILTER");
             filter = this.dataset.retter;
-            document.querySelector("h1").textContent = this.textContent;
+            document.querySelector("h2").textContent = this.textContent;
             document.querySelectorAll(".filter").forEach(elm => {
                 elm.classList.remove("valgt");
             })
