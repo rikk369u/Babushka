@@ -64,25 +64,28 @@
 </head>
 
 <body>
-    <h1>Alle Retter</h1>
-    <nav>
-        <button class="filter valgt" data-retter="alle">Alle Retter</button>
-        <button class="filter" data-retter="f">Forret</button>
-        <button class="filter" data-retter="h">Hovedret</button>
-        <button class="filter" data-retter="d">Dessert</button>
-        <button class="filter" data-retter="dr">Drikke</button>
+    <h1>Alle Kategorier</h1>
+    <nav class="menu">
+        <button class="filter valgt" data-retter="alle">Alle</button>
+        <button class="filter" data-retter="forretter">Forretter</button>
+        <button class="filter" data-retter="hovedretter">Hovedretter</button>
+        <button class="filter" data-retter="desserter">Desserter</button>
+        <button class="filter" data-retter="drikkevarer">Drikkevarer</button>
+        <button class="filter" data-retter="sideorders">Sideorders</button>
     </nav>
 
 
     <template>
         <article class="retter">
             <h2></h2>
-            <p class="id"></p>
-            <p class="forret"></p>
-            <p class="hovedret"></p>
-            <p class="dessert"></p>
-            <p class="drikke"></p>
             <img src="" alt="">
+            <p class="id"></p>
+            <p class="kategori"></p>
+            <p class="pris"></p>
+            <p class="kort"></p>
+            <p class="lang"></p>
+            <p class="oprindelse"></p>
+
         </article>
     </template>
 
@@ -91,10 +94,10 @@
     <script>
         const endpoint = "https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json";
 
-        let retter = [];
+        let menukort = [];
         let filter = "alle";
         const container = document.querySelector("main");
-        const personerTemplate = document.querySelector("template");
+        const menukortTemplate = document.querySelector("template");
 
         document.addEventListener("DOMContentLoaded", start);
 
@@ -106,30 +109,34 @@
         async function hentData() {
             const response = await fetch(endpoint);
             console.log(response);
-            retter = await response.json();
-            console.log(retter);
-            visRetter();
+            menukort = await response.json();
+            console.log(menukort);
+            visMenukort();
 
         }
 
 
-        function visRetter() {
+        function visMenukort() {
             container.innerHTML = "";
-            retter.feed.entry.forEach((ret) => {
-                if (filter == "alle" || filter == ret.gsx$ret.$t) {
-                    const klon = retterTemplate.cloneNode(true).content;
-                    klon.querySelector(".id").textContent = ret.gsx$id.$t;
-                    klon.querySelector("h2").textContent = ret.gsx$navn.$t;
-                    klon.querySelector(".forret").textContent = person.gsx$forret.$t;
-                    klon.querySelector(".hovedret").textContent = ret.gsx$hovedret.$t;
-                    klon.querySelector(".dessert").textContent = ret.gsx$dessert.$t;
-                    klon.querySelector(".drikke").textContent = ret.gsx$drikke.$t;
+            menukort.feed.entry.forEach((retter) => {
+                if (filter == "alle" || filter == retter.gsx$kategori.$t) {
+                    let klon = menukortTemplate.cloneNode(true).content;
+                    klon.querySelector(".id").textContent = retter.gsx$id.$t;
+                    klon.querySelector("h2").textContent = retter.gsx$navn.$t;
+                    klon.querySelector(".kategori").textContent = retter.gsx$kategori.$t;
+                    klon.querySelector(".pris").textContent = retter.gsx$pris.$t;
+                    klon.querySelector(".kort").textContent = retter.gsx$kort.$t;
+                    klon.querySelector(".lang").textContent = retter.gsx$lang.$t;
+                    klon.querySelector(".oprindelse").textContent = retter.gsx$oprindelse.$t;
+                    klon.querySelector("img").src = `imgs/small/${retter.gsx$billede.$t}-sm.jpg`;
+
                     container.appendChild(klon);
+
 
                 }
             })
-
         }
+
 
         function addEventListenersToButtons() {
             document.querySelectorAll(".filter").forEach(elm => {
@@ -139,14 +146,14 @@
         }
 
         function filtrering() {
-
-            filter = this.dataset.ret;
+            console.log("FILTER");
+            filter = this.dataset.retter;
             document.querySelector("h1").textContent = this.textContent;
             document.querySelectorAll(".filter").forEach(elm => {
                 elm.classList.remove("valgt");
             })
             this.classList.add("valgt");
-            visRetter();
+            visMenukort();
         }
     </script>
 </body></html>
