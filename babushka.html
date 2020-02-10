@@ -1,13 +1,152 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="da">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Bistro Basbushka</title>
     <link rel="stylesheet" href="">
+
+
+
+    <style>
+        nav {
+            flex-direction: row;
+            text-align: center;
+            padding: 1rem 1rem 1rem;
+
+
+        }
+
+        nav .valgt {
+            background-color: #e0d0d0;
+        }
+
+        h1 {
+            flex-direction: row;
+            text-align: center;
+            padding: 0.5rem 0.5rem 0.5rem;
+        }
+
+
+
+        article {
+            border: 1px solid black;
+            background-color: lightgray;
+            padding: 0.5rem 0.5rem 0.5rem;
+
+        }
+
+        h2 {
+            flex-direction: row;
+            text-align: center;
+            padding: 0.5rem 0.5rem 0.5rem;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            max-width: 1000px;
+            margin: 0 auto;
+            grid-gap: 10px;
+        }
+
+        button {
+            border: 1px solid black;
+            width: 5rem;
+            height: 2rem;
+        }
+    </style>
 </head>
 
 <body>
-    <script src=""></script>
-</body>
-</html>
+    <h1>Alle Retter</h1>
+    <nav>
+        <button class="filter valgt" data-retter="alle">Alle Retter</button>
+        <button class="filter" data-retter="f">Forret</button>
+        <button class="filter" data-retter="h">Hovedret</button>
+        <button class="filter" data-retter="d">Dessert</button>
+        <button class="filter" data-retter="dr">Drikke</button>
+    </nav>
+
+
+    <template>
+        <article class="retter">
+            <h2></h2>
+            <p class="id"></p>
+            <p class="forret"></p>
+            <p class="hovedret"></p>
+            <p class="dessert"></p>
+            <p class="drikke"></p>
+            <img src="" alt="">
+        </article>
+    </template>
+
+    <main></main>
+
+    <script>
+        const endpoint = "https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json";
+
+        let retter = [];
+        let filter = "alle";
+        const container = document.querySelector("main");
+        const personerTemplate = document.querySelector("template");
+
+        document.addEventListener("DOMContentLoaded", start);
+
+        function start() {
+            hentData();
+            addEventListenersToButtons();
+        }
+
+        async function hentData() {
+            const response = await fetch(endpoint);
+            console.log(response);
+            retter = await response.json();
+            console.log(retter);
+            visRetter();
+
+        }
+
+
+        function visRetter() {
+            container.innerHTML = "";
+            retter.feed.entry.forEach((ret) => {
+                if (filter == "alle" || filter == ret.gsx$ret.$t) {
+                    const klon = retterTemplate.cloneNode(true).content;
+                    klon.querySelector(".id").textContent = ret.gsx$id.$t;
+                    klon.querySelector("h2").textContent = ret.gsx$navn.$t;
+                    klon.querySelector(".forret").textContent = person.gsx$forret.$t;
+                    klon.querySelector(".hovedret").textContent = ret.gsx$hovedret.$t;
+                    klon.querySelector(".dessert").textContent = ret.gsx$dessert.$t;
+                    klon.querySelector(".drikke").textContent = ret.gsx$drikke.$t;
+                    container.appendChild(klon);
+
+                }
+            })
+
+        }
+
+        function addEventListenersToButtons() {
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.addEventListener("click", filtrering);
+            })
+
+        }
+
+        function filtrering() {
+
+            filter = this.dataset.ret;
+            document.querySelector("h1").textContent = this.textContent;
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.classList.remove("valgt");
+            })
+            this.classList.add("valgt");
+            visRetter();
+        }
+    </script>
+</body></html>
