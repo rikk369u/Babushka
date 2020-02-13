@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="">
+
+    <style>
+        body {
+            background-color: #d7e8d7;
+            font-family: "Realist thin";
+
+        }
+
+        h2 {
+            flex-direction: row;
+            text-align: center;
+            padding: 0.5rem 0.5rem 0.5rem;
+        }
+
+        #retter {
+            margin: 0 auto;
+            padding: 2em;
+            background-color: white;
+            cursor: pointer;
+            width: 50vw;
+            border: 1px solid black;
+        }
+
+        img {
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <section id="detalje">
+        <button id="luk">back</button>
+        <article id="retter">
+            <h2></h2>
+            <img src="" alt="">
+            <p class="id"></p>
+            <p class="kategori"></p>
+            <p class="pris"></p>
+            <p class="kort"></p>
+            <p class="lang"></p>
+            <p class="oprindelse"></p>
+        </article>
+    </section>
+
+    <script>
+        const Urlparameter = new URLSearchParams(window.location.search);
+
+        const retId = Urlparameter.get("id");
+        console.log(retId);
+
+        let retter = [];
+        const endpoint = "https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json";
+
+        document.addEventListener("DOMContentLoaded", hentData);
+
+        function start() {
+            hentData();
+            addEventListenersToButtons();
+        }
+
+        async function hentData() {
+            const response = await fetch(endpoint);
+            console.log(response);
+            retter = await response.json();
+
+            visRet();
+
+        }
+
+        function visRet() {
+            detalje.querySelector("button").addEventListener("click", () => {
+                history.back();
+            })
+            console.log(retter);
+            retter.feed.entry.forEach(ret => {
+                if (ret.gsx$id.$t == retId) {
+                    detalje.querySelector("h2").textContent = ret.gsx$navn.$t;
+                    detalje.querySelector(".kategori").textContent = ret.gsx$kategori.$t;
+                    detalje.querySelector(".pris").textContent = `Pris: ${ret.gsx$pris.$t},-`;
+                    detalje.querySelector(".kort").textContent = ret.gsx$kort.$t;
+                    detalje.querySelector(".lang").textContent = ret.gsx$lang.$t;
+                    detalje.querySelector(".oprindelse").textContent = ret.gsx$oprindelse.$t;
+
+                    detalje.querySelector("img").src = `imgs/small/${ret.gsx$billede.$t}-sm.jpg`;
+                }
+            });
+
+        }
+
+    </script>
+</body>
+
+</html>
