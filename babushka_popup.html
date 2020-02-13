@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Basbushka</title>
+    <link rel="stylesheet" href="">
+
+
+
+    <style>
+        body {
+            background-color: #d7e8d7;
+            font-family: "Realist thin";
+
+        }
+
+
+
+        nav {
+            flex-direction: row;
+            text-align: center;
+            padding: 1rem 1rem 1rem;
+
+
+        }
+
+        nav .valgt {
+            background-color: #7eb77e;
+        }
+
+        h1 {
+            font-family: "Papyrus", thin;
+            font-weight: 100;
+            font-size: 100px;
+            border-bottom: solid;
+            letter-spacing: 0.2rem;
+            color: darkgreen;
+            flex-direction: row;
+            text-align: center;
+            padding: 0.5rem 0.5rem 0.5rem;
+        }
+
+
+
+        article {
+            border: 1px solid black;
+            background-color: #ffffff;
+            padding: 0.5rem 0.5rem 0.5rem;
+            margin: 0.5rem;
+
+        }
+
+        h2 {
+            flex-direction: row;
+            text-align: center;
+            padding: 0.5rem 0.5rem 0.5rem;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            max-width: 1000px;
+            margin: 0 auto;
+            grid-gap: 10px;
+        }
+
+        button {
+            border: 1px solid black;
+            width: 7rem;
+            height: 3rem;
+            font-size: 15px;
+            font-weight: 100
+        }
+
+        #detalje {
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            overflow: scroll;
+        }
+
+        #mad {
+            margin: 0 auto;
+            padding: 2em;
+            background-color: white;
+            cursor: pointer;
+
+            width: 50vw;
+        }
+
+        .skjul {
+            display: none;
+        }
+
+        #detalje button {
+            font-size: 1em;
+            margin: 5em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bistro Babushka</h1>
+
+
+    <nav class="menu">
+        <button class="filter valgt" data-retter="alle">Alle</button>
+        <button class="filter" data-retter="forretter">Forretter</button>
+        <button class="filter" data-retter="hovedretter">Hovedretter</button>
+        <button class="filter" data-retter="desserter">Desserter</button>
+        <button class="filter" data-retter="drikkevarer">Drikkevarer</button>
+        <button class="filter" data-retter="sideorders">Sideorders</button>
+    </nav>
+
+    <h2>Alle Kategorier</h2>
+
+    <template>
+        <article class="retter">
+            <h2></h2>
+            <img src="" alt="">
+            <p class="id"></p>
+            <p class="kategori"></p>
+            <p class="pris"></p>
+            <p class="kort"></p>
+            <p class="lang"></p>
+            <p class="oprindelse"></p>
+
+        </article>
+    </template>
+
+    <section id="detalje" class="skjul">
+        <button>X</button>
+        <article id="mad">
+            <h2></h2>
+            <img src="" alt="">
+            <p class="id"></p>
+            <p class="kategori"></p>
+            <p class="pris"></p>
+            <p class="kort"></p>
+            <p class="lang"></p>
+            <p class="oprindelse"></p>
+        </article>
+    </section>
+
+    <main></main>
+
+    <script>
+        const endpoint = "https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json";
+
+        let menukort = [];
+        let filter = "alle";
+        const container = document.querySelector("main");
+        const menukortTemplate = document.querySelector("template");
+        const detalje = document.querySelector("#detalje");
+
+        document.addEventListener("DOMContentLoaded", start);
+
+        function start() {
+            hentData();
+            addEventListenersToButtons();
+        }
+
+        async function hentData() {
+            const response = await fetch(endpoint);
+            console.log(response);
+            menukort = await response.json();
+            console.log(menukort);
+            visMenukort();
+
+        }
+
+
+        function visMenukort() {
+            container.innerHTML = "";
+            menukort.feed.entry.forEach((retter) => {
+                if (filter == "alle" || filter == retter.gsx$kategori.$t) {
+                    let klon = menukortTemplate.cloneNode(true).content;
+                    klon.querySelector(".id").textContent = retter.gsx$id.$t;
+                    klon.querySelector("h2").textContent = retter.gsx$navn.$t;
+                    klon.querySelector(".kategori").textContent = retter.gsx$kategori.$t;
+                    klon.querySelector(".pris").textContent = retter.gsx$pris.$t;
+                    klon.querySelector(".kort").textContent = retter.gsx$kort.$t;
+                    klon.querySelector(".lang").textContent = retter.gsx$lang.$t;
+                    klon.querySelector(".oprindelse").textContent = retter.gsx$oprindelse.$t;
+                    klon.querySelector("img").src = `imgs/small/${retter.gsx$billede.$t}-sm.jpg`;
+
+                    klon.querySelector(".retter").addEventListener("click", () => {
+                        visDetalje(retter);
+
+
+                    });
+                    container.appendChild(klon);
+
+                }
+            })
+        }
+
+        function visDetalje(retter) {
+            console.log("retter");
+            detalje.classList.remove("skjul");
+            detalje.querySelector("button").addEventListener("click", () => detalje.classList.add("skjul"));
+            console.log(retter.gsx$navn.$t)
+            detalje.querySelector("h2").textContent = retter.gsx$navn.$t;
+            detalje.querySelector(".kategori").textContent = retter.gsx$kategori.$t;
+            detalje.querySelector(".pris").textContent = retter.gsx$pris.$t;
+            detalje.querySelector(".kort").textContent = retter.gsx$kort.$t;
+            detalje.querySelector(".lang").textContent = retter.gsx$lang.$t;
+            detalje.querySelector(".oprindelse").textContent = retter.gsx$oprindelse.$t;
+            detalje.querySelector("img").src = `imgs/large/${retter.gsx$billede.$t}.jpg`;
+
+
+        }
+
+
+        function addEventListenersToButtons() {
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.addEventListener("click", filtrering);
+            })
+
+        }
+
+        function filtrering() {
+            console.log("FILTER");
+            filter = this.dataset.retter;
+            document.querySelector("h2").textContent = this.textContent;
+            document.querySelectorAll(".filter").forEach(elm => {
+                elm.classList.remove("valgt");
+            })
+            this.classList.add("valgt");
+            visMenukort();
+        }
+    </script>
+</body></html>
